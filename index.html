@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eef4f0">
+<meta name="description" content="歌词面板总览：TWS、NCT DREAM、SEVENTEEN 的全量歌词与三行对照。">
+<title>歌词档案 · Lyrics Archive</title>
+<style>
+:root{
+  --bg:#eef4f0; --bg2:#e5eef3; --ink:#172922; --soft:#5c756a; --faint:#8fa69b;
+  --line:#d2e0d7; --accent:#3f8f6b;
+  --display:Georgia,"Songti SC","STSong","SimSun",serif;
+  --ui:"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  --mono:Consolas,"SFMono-Regular",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#0d1713; --bg2:#101d24; --ink:#e2efe8; --soft:#9db5aa; --faint:#6f877c;
+         --line:#22362d; --accent:#6fc298; }
+  body::after{opacity:.05;mix-blend-mode:screen}
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;min-height:100vh;color:var(--ink);font-family:var(--ui);
+  background:
+    radial-gradient(1100px 560px at 8% -12%, #dcefe4 0%, transparent 62%),
+    radial-gradient(900px 520px at 102% -4%, #dfeef5 0%, transparent 58%),
+    linear-gradient(160deg,var(--bg),var(--bg2));
+  background-attachment:fixed;
+}
+@media (prefers-color-scheme:dark){
+  body{background:
+    radial-gradient(1100px 560px at 8% -12%, #11251c 0%, transparent 62%),
+    radial-gradient(900px 520px at 102% -4%, #12232c 0%, transparent 58%),
+    linear-gradient(160deg,var(--bg),var(--bg2));}
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+::selection{background:#cfe8da;color:#10231b}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,4.5vw,48px)}
+
+.top{display:flex;align-items:center;justify-content:space-between;
+  padding-top:clamp(22px,4vw,40px);padding-bottom:10px}
+.wordmark{font:600 13px/1 var(--display);letter-spacing:.26em;text-transform:uppercase}
+.wordmark span{color:var(--faint);font-weight:400;margin-left:.45em}
+.counter{font:11px/1 var(--mono);letter-spacing:.2em;color:var(--faint);text-transform:uppercase}
+.counter i{font-style:normal;color:var(--line);margin:0 .5em}
+
+.hero{position:relative;padding:clamp(52px,9vw,104px) 0 clamp(40px,7vw,76px)}
+.hero::after{
+  content:"";position:absolute;z-index:-1;right:-140px;top:-80px;width:460px;height:460px;
+  border-radius:50%;border:1px solid var(--line);
+  box-shadow:inset 0 0 0 58px transparent,inset 0 0 0 59px var(--line);
+  opacity:.55;pointer-events:none;
+}
+.kicker{display:flex;align-items:center;gap:12px;margin:0;
+  font:11px/1 var(--mono);letter-spacing:.28em;text-transform:uppercase;color:var(--soft)}
+.kicker::before{content:"";width:34px;height:1px;background:var(--accent)}
+h1{margin:20px 0 0;font:600 clamp(52px,9vw,104px)/.96 var(--display);letter-spacing:-.015em}
+h1 .hollow{color:var(--soft);margin-left:.06em}
+@supports (-webkit-text-stroke:1px #000){
+  h1 .hollow{color:transparent;-webkit-text-stroke:1px var(--soft)}
+}
+.lede{max-width:30em;margin:24px 0 0;font-size:15px;line-height:1.8;color:var(--soft)}
+.tally{margin:18px 0 0;font:11px/1 var(--mono);letter-spacing:.14em;color:var(--faint)}
+
+.list{border-bottom:1px solid var(--line)}
+.artist{
+  display:grid;grid-template-columns:52px 120px minmax(0,1fr) auto;
+  align-items:center;gap:clamp(16px,3vw,30px);
+  padding:26px 6px;border-top:1px solid var(--line);
+  color:inherit;text-decoration:none;position:relative;isolation:isolate;
+  animation:rise .7s cubic-bezier(.2,.7,.2,1) both;
+  animation-delay:calc(var(--i) * .09s + .12s);
+}
+.artist::before{
+  content:"";position:absolute;inset:0 -14px;z-index:-1;border-radius:16px;
+  background:linear-gradient(90deg,var(--accent),transparent 72%);
+  opacity:0;transition:opacity .35s ease;
+}
+.artist:hover::before,.artist:focus-visible::before{opacity:.09}
+.artist:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.no{font:400 14px/1 var(--mono);letter-spacing:.1em;color:var(--faint);transition:color .35s}
+.artist:hover .no{color:var(--accent)}
+
+.art{position:relative;width:120px;height:120px;flex:none}
+.art img{position:relative;z-index:2;display:block;width:120px;height:120px;object-fit:cover;
+  border-radius:12px;box-shadow:0 10px 24px rgba(23,41,34,.14);
+  transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s}
+.artist:hover .art img{transform:translateY(-3px) rotate(-1deg);box-shadow:0 16px 32px rgba(23,41,34,.18)}
+.disc{
+  position:absolute;z-index:1;left:18px;top:6px;width:108px;height:108px;border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%, var(--accent) 0 7px, #101a16 8px 11px, transparent 12px),
+    repeating-radial-gradient(circle at 50% 50%, #1c2823 0 1.5px, #131d19 1.5px 4px);
+  box-shadow:0 1px 0 rgba(255,255,255,.08) inset;
+  transition:transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.artist:hover .disc{transform:translateX(22px) rotate(14deg)}
+
+.info{min-width:0;position:relative;z-index:2}
+.name{display:block;font:600 clamp(26px,3.2vw,40px)/1.05 var(--display);letter-spacing:.005em}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:11px;
+  font-size:12px;letter-spacing:.05em;color:var(--soft)}
+.meta i{width:3px;height:3px;border-radius:50%;background:var(--faint);opacity:.6}
+
+.go{position:relative;z-index:2;display:flex;align-items:center;gap:11px;color:var(--soft);
+  font-size:12px;letter-spacing:.16em;white-space:nowrap}
+.circle{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;
+  display:grid;place-items:center;transition:background .35s,border-color .35s,color .35s,transform .35s}
+.circle svg{width:16px;height:16px}
+.artist:hover .circle{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateX(3px)}
+
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .artist{animation:none}
+  .art img,.disc,.circle,.artist::before{transition:none}
+}
+@media (max-width:900px){.hero::after{display:none}}
+@media (max-width:640px){
+  .hero{padding:46px 0 38px}
+  .hero::after{display:none}
+  .artist{grid-template-columns:86px minmax(0,1fr) 38px;gap:15px;padding:19px 0}
+  .no{display:none}
+  .art,.art img{width:86px;height:86px}
+  .disc{width:78px;height:78px;left:12px;top:4px}
+  .artist:hover .disc{transform:translateX(8px) rotate(10deg)}
+  .name{font-size:24px}
+  .meta{gap:6px;font-size:11px;margin-top:8px}
+  .goText{display:none}
+  .circle{width:36px;height:36px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="wordmark">Lyrics<span>Archive</span></div>
+    <div class="counter">03 <i>/</i>Artists</div>
+  </header>
+
+  <section class="hero">
+    <p class="kicker">歌词面板总览</p>
+    <h1>歌词<span class="hollow">档案</span></h1>
+    <p class="lede">选一位歌手，进入全部发行与三行歌词。</p>
+    <p class="tally">03 ARTISTS &middot; 524 SONGS</p>
+  </section>
+
+  <main class="list">
+      <a class="artist" href="https://crysl-04.github.io/tws-lyrics/" style="--accent:#4c9a75;--i:0">
+        <span class="no">01</span>
+        <span class="art">
+          <span class="disc" aria-hidden="true"></span>
+          <img src="covers/tws-lyrics.jpg" alt="TWS 专辑封面" width="120" height="120" loading="lazy">
+        </span>
+        <span class="info">
+          <span class="name">TWS</span>
+          <span class="meta">
+            <span>18 张发行</span><i></i>
+            <span>51 首</span><i></i>
+            <span>2024–2026</span>
+          </span>
+        </span>
+        <span class="go"><span class="goText">进入</span><span class="circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h13M12 5l7 7-7 7"/>
+          </svg>
+        </span></span>
+      </a>
+      <a class="artist" href="https://crysl-04.github.io/nctdream-lyrics/" style="--accent:#4f8fb0;--i:1">
+        <span class="no">02</span>
+        <span class="art">
+          <span class="disc" aria-hidden="true"></span>
+          <img src="covers/nctdream-lyrics.jpg" alt="NCT DREAM 专辑封面" width="120" height="120" loading="lazy">
+        </span>
+        <span class="info">
+          <span class="name">NCT DREAM</span>
+          <span class="meta">
+            <span>34 张发行</span><i></i>
+            <span>176 首</span><i></i>
+            <span>2016–2025</span>
+          </span>
+        </span>
+        <span class="go"><span class="goText">进入</span><span class="circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h13M12 5l7 7-7 7"/>
+          </svg>
+        </span></span>
+      </a>
+      <a class="artist" href="https://crysl-04.github.io/seventeen-lyrics/" style="--accent:#2f7d73;--i:2">
+        <span class="no">03</span>
+        <span class="art">
+          <span class="disc" aria-hidden="true"></span>
+          <img src="covers/seventeen-lyrics.jpg" alt="SEVENTEEN 专辑封面" width="120" height="120" loading="lazy">
+        </span>
+        <span class="info">
+          <span class="name">SEVENTEEN</span>
+          <span class="meta">
+            <span>58 张发行</span><i></i>
+            <span>297 首</span><i></i>
+            <span>2015–2026</span>
+          </span>
+        </span>
+        <span class="go"><span class="goText">进入</span><span class="circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h13M12 5l7 7-7 7"/>
+          </svg>
+        </span></span>
+      </a>
+  </main>
+</div>
+</body>
+</html>
