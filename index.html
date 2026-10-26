@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#eef4f0">
-<meta name="description" content="歌词面板总览：TWS、NCT DREAM、SEVENTEEN 的全量歌词与三行对照。">
+<meta name="description" content="歌词面板总览：TWS、NCT DREAM、SEVENTEEN、TNT、ENHYPEN、TXT 的全量歌词与三行对照。">
 <title>歌词档案 · Lyrics Archive</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%232f7d5f'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23eef4f0' stroke-opacity='.4' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23eef4f0' stroke-opacity='.28' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23eef4f0'/%3E%3Ccircle cx='32' cy='32' r='2.2' fill='%232f7d5f'/%3E%3C/svg%3E">
 <style>
@@ -68,6 +68,29 @@ h1 .hollow{color:var(--soft);margin-left:.06em}
 .lede{max-width:30em;margin:24px 0 0;font-size:15px;line-height:1.8;color:var(--soft)}
 .tally{margin:18px 0 0;font:11px/1 var(--mono);letter-spacing:.14em;color:var(--faint)}
 
+.finder{display:flex;align-items:center;gap:11px;max-width:430px;margin:30px 0 0;
+  padding:0 2px 10px;border-bottom:1px solid var(--line);transition:border-color .3s}
+.finder:focus-within{border-color:var(--accent)}
+.finder>svg{width:17px;height:17px;flex:none;color:var(--faint);transition:color .3s}
+.finder:focus-within>svg{color:var(--accent)}
+.finder input{flex:1;min-width:0;border:0;background:none;outline:none;padding:2px 0;
+  color:var(--ink);font:15px/1.45 var(--ui);letter-spacing:.02em}
+.finder input::placeholder{color:var(--faint)}
+.finder input::-webkit-search-cancel-button{display:none}
+.hits{flex:none;font:10.5px/1 var(--mono);letter-spacing:.14em;color:var(--faint)}
+.clear{flex:none;display:grid;place-items:center;width:22px;height:22px;padding:0;
+  border:0;border-radius:50%;background:none;color:var(--faint);font:16px/1 var(--ui);
+  cursor:pointer;transition:color .25s,background .25s}
+.clear:hover{color:var(--ink);background:rgba(127,160,143,.14)}
+.clear[hidden]{display:none}
+
+.empty{display:none;padding:46px 6px 50px;border-top:1px solid var(--line);
+  font:15px/1.7 var(--ui);color:var(--soft)}
+.empty b{font-weight:600;color:var(--ink)}
+.list.is-empty .empty{display:block}
+.list.is-empty .artist{display:none}
+.artist[hidden]{display:none}
+
 .list{border-bottom:1px solid var(--line)}
 .artist{
   display:grid;grid-template-columns:52px 120px minmax(0,1fr) auto;
@@ -124,6 +147,7 @@ h1 .hollow{color:var(--soft);margin-left:.06em}
 @media (max-width:640px){
   .hero{padding:46px 0 38px}
   .hero::after{display:none}
+  .finder{margin-top:24px}
   .artist{grid-template-columns:86px minmax(0,1fr) 38px;gap:15px;padding:19px 0}
   .no{display:none}
   .art,.art img{width:86px;height:86px}
@@ -140,18 +164,28 @@ h1 .hollow{color:var(--soft);margin-left:.06em}
 <div class="wrap">
   <header class="top">
     <div class="wordmark">Lyrics<span>Archive</span></div>
-    <div class="counter">03 <i>/</i>Artists</div>
+    <div class="counter">06 <i>/</i>Artists</div>
   </header>
 
   <section class="hero">
     <p class="kicker">歌词面板总览</p>
     <h1>歌词<span class="hollow">档案</span></h1>
     <p class="lede">选一位歌手，进入全部发行与三行歌词。</p>
-    <p class="tally">03 ARTISTS &middot; 547 SONGS</p>
+    <p class="tally">06 ARTISTS &middot; 1,348 SONGS</p>
+    <div class="finder" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>
+      </svg>
+      <input id="q" type="search" placeholder="搜歌手 / 组合名" autocomplete="off"
+             spellcheck="false" aria-label="搜索歌手">
+      <span class="hits" id="hits" aria-live="polite"></span>
+      <button class="clear" id="clear" type="button" aria-label="清空搜索" hidden>&times;</button>
+    </div>
   </section>
 
-  <main class="list">
-      <a class="artist" href="https://crysl-04.github.io/tws-lyrics/" style="--accent:#4c9a75;--i:0">
+  <main class="list" id="list">
+      <a class="artist" href="https://crysl-04.github.io/tws-lyrics/" style="--accent:#4c9a75;--i:0" data-k="tws tws">
         <span class="no">01</span>
         <span class="art">
           <span class="disc" aria-hidden="true"></span>
@@ -172,7 +206,7 @@ h1 .hollow{color:var(--soft);margin-left:.06em}
           </svg>
         </span></span>
       </a>
-      <a class="artist" href="https://crysl-04.github.io/nctdream-lyrics/" style="--accent:#4f8fb0;--i:1">
+      <a class="artist" href="https://crysl-04.github.io/nctdream-lyrics/" style="--accent:#4f8fb0;--i:1" data-k="nct dream nctdream">
         <span class="no">02</span>
         <span class="art">
           <span class="disc" aria-hidden="true"></span>
@@ -193,7 +227,7 @@ h1 .hollow{color:var(--soft);margin-left:.06em}
           </svg>
         </span></span>
       </a>
-      <a class="artist" href="https://crysl-04.github.io/seventeen-lyrics/" style="--accent:#2f7d73;--i:2">
+      <a class="artist" href="https://crysl-04.github.io/seventeen-lyrics/" style="--accent:#2f7d73;--i:2" data-k="seventeen seventeen">
         <span class="no">03</span>
         <span class="art">
           <span class="disc" aria-hidden="true"></span>
@@ -214,7 +248,102 @@ h1 .hollow{color:var(--soft);margin-left:.06em}
           </svg>
         </span></span>
       </a>
+      <a class="artist" href="https://crysl-04.github.io/tnt-lyrics/" style="--accent:#5d8f6b;--i:3" data-k="tnt tnt 时代少年团 teens in times">
+        <span class="no">04</span>
+        <span class="art">
+          <span class="disc" aria-hidden="true"></span>
+          <img src="covers/tnt-lyrics.jpg" alt="TNT 专辑封面" width="120" height="120" loading="lazy">
+        </span>
+        <span class="info">
+          <span class="name">TNT</span>
+          <span class="meta">
+            <span>54 张发行</span><i></i>
+            <span>254 首</span><i></i>
+            <span>2019–2026</span>
+          </span>
+        </span>
+        <span class="go"><span class="goText">进入</span><span class="circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h13M12 5l7 7-7 7"/>
+          </svg>
+        </span></span>
+      </a>
+      <a class="artist" href="https://crysl-04.github.io/enhypen-lyrics/" style="--accent:#3f6f8f;--i:4" data-k="enhypen enhypen">
+        <span class="no">05</span>
+        <span class="art">
+          <span class="disc" aria-hidden="true"></span>
+          <img src="covers/enhypen-lyrics.jpg" alt="ENHYPEN 专辑封面" width="120" height="120" loading="lazy">
+        </span>
+        <span class="info">
+          <span class="name">ENHYPEN</span>
+          <span class="meta">
+            <span>69 张发行</span><i></i>
+            <span>342 首</span><i></i>
+            <span>2020–2026</span>
+          </span>
+        </span>
+        <span class="go"><span class="goText">进入</span><span class="circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h13M12 5l7 7-7 7"/>
+          </svg>
+        </span></span>
+      </a>
+      <a class="artist" href="https://crysl-04.github.io/txt-lyrics/" style="--accent:#4f93a8;--i:5" data-k="txt txt tomorrow x together tomorrow by together">
+        <span class="no">06</span>
+        <span class="art">
+          <span class="disc" aria-hidden="true"></span>
+          <img src="covers/txt-lyrics.jpg" alt="TXT 专辑封面" width="120" height="120" loading="lazy">
+        </span>
+        <span class="info">
+          <span class="name">TXT</span>
+          <span class="meta">
+            <span>61 张发行</span><i></i>
+            <span>205 首</span><i></i>
+            <span>2019–2026</span>
+          </span>
+        </span>
+        <span class="go"><span class="goText">进入</span><span class="circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h13M12 5l7 7-7 7"/>
+          </svg>
+        </span></span>
+      </a>
+    <p class="empty">没有匹配的歌手 —— 换个写法试试，中英文、大小写都行。</p>
   </main>
 </div>
+<script>
+(function(){
+  var q = document.getElementById('q'),
+      hits = document.getElementById('hits'),
+      list = document.getElementById('list'),
+      clear = document.getElementById('clear'),
+      rows = [].slice.call(list.querySelectorAll('.artist')),
+      keys = rows.map(function(r){ return (r.dataset.k || '').toLowerCase().replace(/\s+/g, '') }),
+      norm = function(s){ return (s || '').toLowerCase().replace(/\s+/g, '') };
+
+  function apply(){
+    var v = norm(q.value), n = 0;
+    rows.forEach(function(r, i){
+      var on = !v || keys[i].indexOf(v) >= 0;
+      r.hidden = !on;
+      if (on) n++;
+    });
+    list.classList.toggle('is-empty', n === 0);
+    hits.textContent = v ? (n ? n + ' 位' : '0 位') : '';
+    clear.hidden = !q.value;
+  }
+
+  q.addEventListener('input', apply);
+  clear.addEventListener('click', function(){ q.value = ''; apply(); q.focus() });
+  document.addEventListener('keydown', function(e){
+    if (e.key === '/' && document.activeElement !== q){ e.preventDefault(); q.focus() }
+    else if (e.key === 'Escape' && document.activeElement === q){ q.value = ''; apply(); q.blur() }
+  });
+  apply();
+})();
+</script>
 </body>
 </html>
